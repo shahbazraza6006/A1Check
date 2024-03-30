@@ -1,0 +1,24 @@
+name: Pull Request Automation
+
+on:
+  push:
+    branches:
+      - feature
+      - dev
+      - test
+
+jobs:
+  automate_pull_request:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+          branch: ${{ github.ref == 'refs/heads/feature' && 'dev' || 'test' || 'main' }}
+          title: ${{ github.ref == 'refs/heads/feature' && 'Merge feature into dev' || 'Merge dev into test' || 'Merge test into main' }}
+          body: ${{ github.ref == 'refs/heads/feature' && 'Automated pull request to merge feature into dev' || 'Automated pull request to merge dev into test' ||  'Automated pull request to merge test into main' }}
